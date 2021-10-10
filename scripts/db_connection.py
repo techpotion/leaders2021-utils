@@ -1,10 +1,13 @@
 from sqlalchemy import create_engine
+from dotenv import load_dotenv
 import os
 
 def connect_db():
     '''
     getting the database connection instance
     '''
+    load_dotenv()
+
     db_host = os.getenv('DB_HOST')
     db_port = os.getenv('DB_PORT')
     db_username = os.getenv('DB_USERNAME')
