@@ -38,7 +38,7 @@ def migrate(drop=False) -> None:
     engine = connect_db()
 
     if_exists = 'replace' if drop else 'append'
-    df.to_sql('objects', engine, index=False, if_exists=if_exists)
+    df.to_sql('objects_detailed', engine, index=False, if_exists=if_exists)
 
 if __name__ == "__main__":
     migrate(drop=True)
