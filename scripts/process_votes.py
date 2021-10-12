@@ -1,4 +1,6 @@
 import pandas as pd
+from geojson import Point, Feature
+import json
 
 def load_votes_df() -> pd.DataFrame:
     df = pd.read_csv('assets/votes.csv')
@@ -22,11 +24,30 @@ def merge_dfs(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     df = df.drop(columns=['УИК', 'ID'])
     return df
 
+def df_to_geojson(df: pd.DataFrame) -> dict:
+    features = []
+    for _, row in df.iterrows():
+        prop = row['Число избирателей, включенных в список избирателей']
+        new_point = Point((float(row['Longitude_WGS84']), float(row['Latitude_WGS84'])))
+        feature = Feature(geometry=new_point, properties={'heatness': prop})
+        features.append(feature)
+
+    result = {
+        "type": "FeatureCollection",
+        "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+        "features": features
+    }
+
+    return result
+
 def main():
     df1 = load_stations()
     df2 = process_votes(load_votes_df())
     df = merge_dfs(df1, df2)
-    df.to_excel('export/results.xlsx')
+    geojson = df_to_geojson(df)
+    with open("../export/res.geojson", "w") as outfile:
+        json.dump(geojson, outfile)
+    # df.to_excel('export/results.xlsx')
 
 if __name__ == "__main__":
     main()
