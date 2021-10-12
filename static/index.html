@@ -27,11 +27,11 @@ width: 100%;
 <div id="map"></div>
 <script>
 mapboxgl.accessToken =
-'pk.eyJ1IjoibWluaXNoMTQ0IiwiYSI6ImNrcDczYXdtMTFiMjYyd3IyN2p2MGs2ejAifQ.8HuH4EVgCkas-dhGfKA94A';
+'pk.eyJ1IjoibWFsLXdvb2QiLCJhIjoiY2oyZ2t2em50MDAyMzJ3cnltMDFhb2NzdiJ9.X-D4Wvo5E5QxeP7K_I3O8w';
 const map = new mapboxgl.Map({
 container: 'map',
 style: 'mapbox://styles/mapbox/dark-v10',
-center: [37.727859, 55.681859],
+center: [37.482708, 55.714409],
 zoom: 11
 });
 map.on('load', () => {
@@ -48,14 +48,15 @@ map.addLayer(
 'maxzoom': 15,
 'paint': {
 // increase weight as diameter breast height increases
-'heatmap-weight': {
-'property': 'dbh',
-'type': 'exponential',
-'stops': [
-[1, 0],
-[62, 1]
-]
-},
+'heatmap-weight': [
+'interpolate',
+['linear'],
+['get', 'heatness'],
+0,
+0,
+6,
+1
+],
 // increase intensity as zoom level increases
 'heatmap-intensity': {
 'stops': [
@@ -69,22 +70,20 @@ map.addLayer(
 ['linear'],
 ['heatmap-density'],
 0,
-'rgba(255, 255, 255, 0)',
+'rgba(239,0,0,0)',
 0.2,
-'rgba(255, 200, 200, 0)',
+'rgb(230,80,20)',
 0.4,
-'rgba(255, 150, 150, 0)',
+'rgb(219,80,16)',
 0.6,
-'rgba(255, 100, 100, 0)',
+'rgb(207,80,10)',
 0.8,
-'rgba(255, 50, 50, 0)',
-1.0,
-'rgba(255, 0, 0, 0.5)'
+'rgb(153,80,2)'
 ],
 // increase radius as zoom increases
 'heatmap-radius': {
 'stops': [
-[11, 50],
+[11, 30],
 [15, 20]
 ]
 },
