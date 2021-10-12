@@ -45,7 +45,7 @@ def main():
     df2 = process_votes(load_votes_df())
     df = merge_dfs(df1, df2)
     geojson = df_to_geojson(df)
-    with open("../export/res.geojson", "w") as outfile:
+    with open("export/res.geojson", "w") as outfile:
         json.dump(geojson, outfile)
     # df.to_excel('export/results.xlsx')
 
