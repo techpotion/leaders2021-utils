@@ -15,7 +15,7 @@ def read_dataset_sheet_1() -> pd.DataFrame:
     df = df.rename({
         'id Объекта': 'object_id',
         'Объект': 'object_name',
-        'Адрес': 'address',
+        'Адрес': 'object_address',
         'Широта (Latitude)': 'object_point_lat',
         'Долгота (Longitude)': 'object_point_lng',
         'id Ведомственной Организации': 'departmental_organization_id',
@@ -37,7 +37,6 @@ def read_dataset_sheet_2() -> pd.DataFrame:
     df = df.rename({
         'id Объекта': 'object_id',
         'Объект': 'object_name',
-        'Адрес': 'address',
         'Широта (Latitude)': 'object_point_lat',
         'Долгота (Longitude)': 'object_point_lng',
         'id Ведомственной Организации': 'departmental_organization_id',
@@ -45,6 +44,7 @@ def read_dataset_sheet_2() -> pd.DataFrame:
         'id Спортзоны': 'sports_area_id',
         'Спортзона': 'sports_area_name',
         'Тип спортзоны': 'sports_area_type',
+        'Адрес': 'sports_area_address',
         'Площадь спортзоны': 'sports_area_square',
         'Доступность': 'availability',
         'Вид спорта': 'sport_kind',
@@ -60,7 +60,7 @@ def migrate(replace=False, which='both') -> None:
     '''
     engine = connect_db()
 
-    if_exists = 'replace' if drop else 'append'
+    if_exists = 'replace' if replace else 'append'
 
     if which == 'firsts' or 'both':
         df1 = read_dataset_sheet_1()
