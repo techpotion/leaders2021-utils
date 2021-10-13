@@ -15,13 +15,15 @@ def read_dataset_sheet_1() -> pd.DataFrame:
     df = df.rename({
         'id Объекта': 'object_id',
         'Объект': 'object_name',
+        'Адрес': 'address',
         'Широта (Latitude)': 'object_point_lat',
         'Долгота (Longitude)': 'object_point_lng',
         'id Ведомственной Организации': 'departmental_organization_id',
         'Ведомственная Организация': 'departmental_organization_name',
         'Доступность': 'availability'
     }, axis='columns')
-
+    print(df.head())
+    print(df.columns)
     return df
 
 def read_dataset_sheet_2() -> pd.DataFrame:
@@ -35,6 +37,7 @@ def read_dataset_sheet_2() -> pd.DataFrame:
     df = df.rename({
         'id Объекта': 'object_id',
         'Объект': 'object_name',
+        'Адрес': 'address',
         'Широта (Latitude)': 'object_point_lat',
         'Долгота (Longitude)': 'object_point_lng',
         'id Ведомственной Организации': 'departmental_organization_id',
@@ -42,13 +45,15 @@ def read_dataset_sheet_2() -> pd.DataFrame:
         'id Спортзоны': 'sports_area_id',
         'Спортзона': 'sports_area_name',
         'Тип спортзоны': 'sports_area_type',
+        'Площадь спортзоны': 'sports_area_square',
         'Доступность': 'availability',
-        'Вид спорта': 'sport_kind'
+        'Вид спорта': 'sport_kind',
     }, axis='columns')
-
+    print(df.head())
+    print(df.columns)
     return df
 
-def migrate(drop=False, which='both') -> None:
+def migrate(replace=False, which='both') -> None:
     '''
     migrating it from dataframe
     right to the database
@@ -66,4 +71,4 @@ def migrate(drop=False, which='both') -> None:
         df2.to_sql('objects_detailed', engine, index=False, if_exists=if_exists)
 
 if __name__ == "__main__":
-    migrate(drop=True, which='first')
+    migrate(replace=True, which='first')
