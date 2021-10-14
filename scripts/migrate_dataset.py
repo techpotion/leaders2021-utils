@@ -11,6 +11,7 @@ def read_dataset_sheet_1() -> pd.DataFrame:
     sheet 1 and processing it
     '''
     df: pd.DataFrame = pd.read_excel('assets/dataset.xlsx', 'Объекты отдельно')
+    print(df.columns)
     df = df.drop(columns=['Доступность.1'])
     df = df.rename({
         'id Объекта': 'object_id',
@@ -32,8 +33,8 @@ def read_dataset_sheet_2() -> pd.DataFrame:
     sheet 2 and processing it
     '''
     df: pd.DataFrame = pd.read_excel('assets/dataset.xlsx', 'Со спортзонами и видами спорта')
-
-    df = df.drop(columns=['Доступность.1', 'Unnamed: 12',  'Unnamed: 13', 'Unnamed: 14'])
+    print(df.columns)
+    df = df.drop(columns=['Доступность.1', 'Unnamed: 13',  'Unnamed: 14', 'Unnamed: 15'])
     df = df.rename({
         'id Объекта': 'object_id',
         'Объект': 'object_name',
@@ -64,6 +65,7 @@ def migrate(replace=False, which='both') -> None:
 
     if which == 'firsts' or 'both':
         df1 = read_dataset_sheet_1()
+        df1 = df1.dropna()
         df1.to_sql('objects', engine, index=False, if_exists=if_exists)
         engine.execute(
             '''
@@ -81,6 +83,7 @@ def migrate(replace=False, which='both') -> None:
 
     if which == 'second' or 'both':
         df2 = read_dataset_sheet_2()
+        df2 = df2.dropna()
         df2.to_sql('objects_detailed', engine, index=False, if_exists=if_exists)
         engine.execute(
             '''
