@@ -63,24 +63,6 @@ def migrate(replace=False, which='both') -> None:
 
     if_exists = 'replace' if replace else 'append'
 
-    if which == 'firsts' or 'both':
-        df1 = read_dataset_sheet_1()
-        df1 = df1.dropna()
-        df1.to_sql('objects', engine, index=False, if_exists=if_exists)
-        engine.execute(
-            '''
-            DELETE FROM "objects"
-            WHERE object_point_lat IS NULL;
-
-            ALTER TABLE "objects"
-            ADD COLUMN "position" geometry;
-
-            UPDATE "objects"
-            SET "position"=ST_Point(object_point_lng, object_point_lat)
-            WHERE object_point_lng IS NOT NULL;
-            '''
-        )
-
     if which == 'second' or 'both':
         df2 = read_dataset_sheet_2()
         df2 = df2.dropna()
@@ -98,6 +80,45 @@ def migrate(replace=False, which='both') -> None:
             WHERE object_point_lng IS NOT NULL;
             '''
         )
+
+    if which == 'firsts' or 'both':
+        df1 = read_dataset_sheet_1()
+        df1 = df1.dropna()
+        df1.to_sql('objects', engine, index=False, if_exists=if_exists)
+        engine.execute(
+            '''
+            DELETE FROM "objects"
+            WHERE object_point_lat IS NULL;
+
+            ALTER TABLE "objects"
+            ADD COLUMN "position" geometry;
+
+            UPDATE "objects"
+            SET "position"=ST_Point(object_point_lng, object_point_lat)
+            WHERE object_point_lng IS NOT NULL;
+            '''
+        )
+        engine.execute(
+            '''
+            ALTER TABLE "objects"
+            ADD COLUMN "object_sum_square" double precision;
+
+            WITH sumt as (
+                SELECT object_id, SUM(sports_area_square) as total_square FROM "objects_detailed"
+                GROUP BY object_id
+            )
+
+            UPDATE "objects" as o
+            SET object_sum_square = (
+                SELECT total_square FROM sumt
+                WHERE object_id = o.object_id
+            );
+
+            DELETE FROM "objects"
+            WHERE object_sum_square IS NULL
+            '''
+        )
+
 
 if __name__ == "__main__":
     migrate(replace=True, which='first')
