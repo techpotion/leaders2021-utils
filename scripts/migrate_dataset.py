@@ -65,10 +65,36 @@ def migrate(replace=False, which='both') -> None:
     if which == 'firsts' or 'both':
         df1 = read_dataset_sheet_1()
         df1.to_sql('objects', engine, index=False, if_exists=if_exists)
+        engine.execute(
+            '''
+            DELETE FROM "objects"
+            WHERE object_point_lat IS NULL;
+
+            ALTER TABLE "objects"
+            ADD COLUMN "position" geometry;
+
+            UPDATE "objects"
+            SET "position"=ST_SetSRID(ST_MakePoint(object_point_lng, object_point_lat), 4326)
+            WHERE object_point_lng IS NOT NULL;
+            '''
+        )
 
     if which == 'second' or 'both':
         df2 = read_dataset_sheet_2()
         df2.to_sql('objects_detailed', engine, index=False, if_exists=if_exists)
+        engine.execute(
+            '''
+            DELETE FROM "objects_detailed"
+            WHERE object_point_lat IS NULL;
+
+            ALTER TABLE "objects_detailed"
+            ADD COLUMN "position" geometry;
+
+            UPDATE "objects_detailed"
+            SET "position"=ST_SetSRID(ST_MakePoint(object_point_lng, object_point_lat), 4326)
+            WHERE object_point_lng IS NOT NULL;
+            '''
+        )
 
 if __name__ == "__main__":
     migrate(replace=True, which='first')
