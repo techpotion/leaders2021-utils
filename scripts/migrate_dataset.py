@@ -76,7 +76,7 @@ def migrate(replace=False, which='both') -> None:
             ADD COLUMN "position" geometry;
 
             UPDATE "objects_detailed"
-            SET "position"=ST_Point(object_point_lng, object_point_lat)
+            SET "position" = ST_SetSRID(ST_Point(object_point_lng, object_point_lat), 4326)
             WHERE object_point_lng IS NOT NULL;
             '''
         )
@@ -94,7 +94,7 @@ def migrate(replace=False, which='both') -> None:
             ADD COLUMN "position" geometry;
 
             UPDATE "objects"
-            SET "position"=ST_Point(object_point_lng, object_point_lat)
+            SET "position" = ST_SetSRID(ST_Point(object_point_lng, object_point_lat), 4326)
             WHERE object_point_lng IS NOT NULL;
             '''
         )

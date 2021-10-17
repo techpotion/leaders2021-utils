@@ -8,14 +8,14 @@ def read_parks_dataset() -> pd.DataFrame:
     return pd.read_json('assets/parks.json', encoding='windows-1251')
 
 # def form_latlangs(df: pd.DataFrame) -> pd.DataFrame:
-#     df['center_lat'] = None
-#     df['center_lng'] = None
+#     df['center_point_lat'] = None
+#     df['center_point_lng'] = None
 
 #     for index, row in df.iterrows():
 #         coordinates = row['geodata_center']
 #         lng, lat = coordinates['coordinates']
-#         df.at[index, 'center_lat'] = lat
-#         df.at[index, 'center_lng'] = lng
+#         df.at[index, 'center_point_lat'] = lat
+#         df.at[index, 'center_point_lng'] = lng
 
 #     df = df[df['center_lat'].notna()]
 #     return df
@@ -37,8 +37,17 @@ if __name__ == "__main__":
             '''
             ALTER TABLE "parks"
             ADD COLUMN "center_position" geometry;
+            ALTER TABLE "parks"
+            ADD COLUMN "center_point_lat" DOUBLE PRECISION;
+            ALTER TABLE "parks"
+            ADD COLUMN "center_point_lng" DOUBLE PRECISION;
+
             UPDATE "parks"
             SET "center_position" = ST_GeomFromGeoJSON(geodata_center);
+            UPDATE "parks"
+            SET "center_point_lat" = ST_Y(geodata_center);
+            UPDATE "parks"
+            SET "center_point_lng" = ST_X(geodata_center);
 
             ALTER TABLE "parks"
             ADD COLUMN "polygon" geometry;
