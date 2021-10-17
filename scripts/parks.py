@@ -30,6 +30,7 @@ if __name__ == "__main__":
 
     df['geo_data'] = df['geo_data'].astype(str)
     df['geodata_center'] = df['geodata_center'].astype(str)
+    df['has_sportground'] = df['has_sportground'].map({'да': True, 'нет': False})
 
     engine = connect_db()
     df.to_sql('parks', engine, index=False, if_exists='replace')
