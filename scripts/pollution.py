@@ -12,7 +12,7 @@ if __name__ == "__main__":
     df.columns = column_names_to_snake(list(df.columns))
     df['geo_data'] = df['geo_data'].astype(str)
     df['geodata_center'] = df['geodata_center'].astype(str)
-    df['is polluted'] = False
+    df['is_polluted'] = False
     df = df.rename({'latitude__w_g_s84': 'center_point_lat', 'longitude__w_g_s84': 'center_point_lng'}, axis=1)
 
     for index, row in df.iterrows():
