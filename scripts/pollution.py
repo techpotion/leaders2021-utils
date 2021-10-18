@@ -12,11 +12,11 @@ if __name__ == "__main__":
     df.columns = column_names_to_snake(list(df.columns))
     df['geo_data'] = df['geo_data'].astype(str)
     df['geodata_center'] = df['geodata_center'].astype(str)
-    df['is_ok'] = True
+    df['is polluted'] = False
     df = df.rename({'latitude__w_g_s84': 'center_point_lat', 'longitude__w_g_s84': 'center_point_lng'}, axis=1)
 
     for index, row in df.iterrows():
-        df.at[index, 'is_ok'] = True if NORMAL_VALUE_SUBSTR in row['results'].lower() else False
+        df.at[index, 'polluted'] = False if NORMAL_VALUE_SUBSTR in row['results'].lower() else True
 
     engine = connect_db()
     df.to_sql('pollution', engine, index=False, if_exists='replace')
