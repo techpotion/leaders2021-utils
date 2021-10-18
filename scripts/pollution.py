@@ -19,22 +19,22 @@ if __name__ == "__main__":
         df.at[index, 'polluted'] = False if NORMAL_VALUE_SUBSTR in row['results'].lower() else True
 
     engine = connect_db()
-    df.to_sql('pollution', engine, index=False, if_exists='replace')
+    df.to_sql('pollutions', engine, index=False, if_exists='replace')
     engine.execute(
         '''
-        ALTER TABLE "pollution"
+        ALTER TABLE "pollutions"
         ADD COLUMN "polygon" geometry;
-        ALTER TABLE "pollution"
-        ADD COLUMN "center_point" geometry;
+        ALTER TABLE "pollutions"
+        ADD COLUMN "position" geometry;
 
-        UPDATE "pollution"
+        UPDATE "pollutions"
         SET "polygon" = ST_GeomFromGeoJSON(geo_data);
-        UPDATE "pollution"
-        SET "center_point" = ST_SetSRID(ST_Point(center_point_lng, center_point_lat), 4326);
+        UPDATE "pollutions"
+        SET "position" = ST_SetSRID(ST_Point(center_point_lng, center_point_lat), 4326);
 
-        ALTER TABLE "pollution"
+        ALTER TABLE "pollutions"
         DROP "geo_data";
-        ALTER TABLE "pollution"
+        ALTER TABLE "pollutions"
         DROP "geodata_center";
         '''
     )
