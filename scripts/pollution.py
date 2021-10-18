@@ -34,5 +34,7 @@ if __name__ == "__main__":
 
         ALTER TABLE "pollution"
         DROP "geo_data";
+        ALTER TABLE "pollution"
+        DROP "geodata_center";
         '''
     )
