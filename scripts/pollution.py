@@ -16,7 +16,7 @@ if __name__ == "__main__":
     df = df.rename({'latitude__w_g_s84': 'center_point_lat', 'longitude__w_g_s84': 'center_point_lng'}, axis=1)
 
     for index, row in df.iterrows():
-        df.at[index, 'polluted'] = False if NORMAL_VALUE_SUBSTR in row['results'].lower() else True
+        df.at[index, 'is_polluted'] = False if NORMAL_VALUE_SUBSTR in row['results'].lower() else True
 
     engine = connect_db()
     df.to_sql('pollutions', engine, index=False, if_exists='replace')
