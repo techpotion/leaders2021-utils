@@ -1,11 +1,9 @@
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import os
+import psycopg2
 
-def connect_db():
-    '''
-    getting the database connection instance
-    '''
+def connection_string() -> str:
     load_dotenv()
 
     db_host = os.getenv('DB_HOST')
@@ -14,6 +12,14 @@ def connect_db():
     db_password = os.getenv('DB_PASSWORD')
     db_db = os.getenv('DB_DB')
 
-    connection_string = f'postgresql://{db_username}:{db_password}@{db_host}:{db_port}/{db_db}'
+    return f'postgresql://{db_username}:{db_password}@{db_host}:{db_port}/{db_db}'
 
-    return create_engine(connection_string)
+def connect_db():
+    '''
+    getting the database connection instance
+    '''
+    return create_engine(connection_string())
+
+def psycopg_connect_db():
+    conn = psycopg2.connect(connection_string())
+    return conn, conn.cursor()
