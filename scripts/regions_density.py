@@ -18,7 +18,7 @@ def read_demography() -> pd.DataFrame:
 if __name__ == "__main__":
     df1 = read_demography()
     df2 = read_geojson()
-    df = df1.merge(df2, left_on='District', right_on='region')
+    df = df1.merge(df2, left_on='District', right_on='region', how='right')
     df.columns = column_names_to_snake(list(df.columns))
 
     engine = connect_db()
@@ -26,7 +26,11 @@ if __name__ == "__main__":
     engine.execute('''
         ALTER TABLE "regions"
         ADD COLUMN "polygon" geometry;
+        ALTER TABLE "regions"
+        ADD COLUMN "square" double precision;
 
         UPDATE "regions"
         SET "polygon" = ST_GeomFromGeoJSON(geojson);
+        UPDATE "regions"
+        SET "square" = ST_Area(polygon::geography);
     ''')
