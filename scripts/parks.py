@@ -28,42 +28,38 @@ if __name__ == "__main__":
     df = read_parks_dataset()
     df = update_column_names(df)
 
+    df = df[['common_name', 'adm_area', 'district', 'location', 'has_sportground', 'geo_data', 'geodata_center']]
+
     df['geo_data'] = df['geo_data'].astype(str)
     df['geodata_center'] = df['geodata_center'].astype(str)
     df['has_sportground'] = df['has_sportground'].map({'да': True, 'нет': False})
 
-    for index, row in df.iterrows():
-        for col in list(df.columns):
-            print(row[col], '\n')
-            if type(row[col]) == str:
-                print('yes')
+    engine = connect_db()
+    df.to_sql('parks', engine, index=False, if_exists='replace')
+    engine.execute(
+            '''
+            ALTER TABLE "parks"
+            ADD COLUMN "center_position" geometry;
+            ALTER TABLE "parks"
+            ADD COLUMN "center_point_lat" DOUBLE PRECISION;
+            ALTER TABLE "parks"
+            ADD COLUMN "center_point_lng" DOUBLE PRECISION;
 
-    # engine = connect_db()
-    # df.to_sql('parks', engine, index=False, if_exists='replace')
-    # engine.execute(
-    #         '''
-    #         ALTER TABLE "parks"
-    #         ADD COLUMN "center_position" geometry;
-    #         ALTER TABLE "parks"
-    #         ADD COLUMN "center_point_lat" DOUBLE PRECISION;
-    #         ALTER TABLE "parks"
-    #         ADD COLUMN "center_point_lng" DOUBLE PRECISION;
+            UPDATE "parks"
+            SET "center_position" = ST_GeomFromGeoJSON(geodata_center);
+            UPDATE "parks"
+            SET "center_point_lat" = ST_Y(geodata_center);
+            UPDATE "parks"
+            SET "center_point_lng" = ST_X(geodata_center);
 
-    #         UPDATE "parks"
-    #         SET "center_position" = ST_GeomFromGeoJSON(geodata_center);
-    #         UPDATE "parks"
-    #         SET "center_point_lat" = ST_Y(geodata_center);
-    #         UPDATE "parks"
-    #         SET "center_point_lng" = ST_X(geodata_center);
+            ALTER TABLE "parks"
+            ADD COLUMN "polygon" geometry;
+            UPDATE "parks"
+            SET "polygon" = ST_GeomFromGeoJSON(geo_data);
 
-    #         ALTER TABLE "parks"
-    #         ADD COLUMN "polygon" geometry;
-    #         UPDATE "parks"
-    #         SET "polygon" = ST_GeomFromGeoJSON(geo_data);
-
-    #         ALTER TABLE "parks"
-    #         DROP "geodata_center";
-    #         ALTER TABLE "parks"
-    #         DROP "geo_data";
-    #         '''
-    #     )
+            ALTER TABLE "parks"
+            DROP "geodata_center";
+            ALTER TABLE "parks"
+            DROP "geo_data";
+            '''
+        )
