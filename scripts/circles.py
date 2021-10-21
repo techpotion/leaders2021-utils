@@ -27,46 +27,67 @@ def availability_meters(availability: int) -> int:
     else:
         return 0
 
-def create_table_query() -> str:
-    return f'''
-        DROP TABLE IF EXISTS {TABLE_NAME};
+# def create_table_query() -> str:
+#     return f'''
+#         DROP TABLE IF EXISTS {TABLE_NAME};
 
-        CREATE TABLE {TABLE_NAME} (
-            object_id bigint,
-            neighbor_object_id bigint,
-            availability double precision,
-            distance double precision
-        );
-    '''
+#         CREATE TABLE {TABLE_NAME} (
+#             object_id bigint,
+#             neighbor_object_id bigint,
+#             availability double precision,
+#             distance double precision
+#         );
+#     '''
 
-def calc_overlaps_query(availability: int) -> str:
-    a_meters = availability_meters(availability)
-    return f'''
-        WITH obs AS (
-            SELECT * FROM objects
-            WHERE availability = {availability}
-        )
+# def calc_overlaps_query(availability: int) -> str:
+#     a_meters = availability_meters(availability)
+#     return f'''
+#         WITH obs AS (
+#             SELECT * FROM objects
+#             WHERE availability = {availability}
+#         )
 
-        INSERT INTO {TABLE_NAME}
-        SELECT o.object_id as object_id, ob.object_id as neighbor_object_id, o.availability as availability, ST_DistanceSphere(o.position, ob.position) as distance FROM obs as o
-        JOIN obs as ob on true
-        WHERE (o.availability = {availability}) AND (ST_DistanceSphere(o.position, ob.position) BETWEEN 10 AND {a_meters});
+#         INSERT INTO {TABLE_NAME}
+#         SELECT o.object_id as object_id, ob.object_id as neighbor_object_id, o.availability as availability, ST_DistanceSphere(o.position, ob.position) as distance FROM obs as o
+#         JOIN obs as ob on true
+#         WHERE (o.availability = {availability}) AND (ST_DistanceSphere(o.position, ob.position) BETWEEN 10 AND {a_meters});
 
-        SELECT * FROM objects
-        LIMIT 1
-    '''
+#         SELECT * FROM objects
+#         LIMIT 1
+#     '''
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+#     conn, cursor = psycopg_connect_db()
+
+#     cr_query = create_table_query()
+#     cursor.execute(cr_query)
+
+#     for i in range(1, 5):
+#         query = calc_overlaps_query(i)
+#         cursor.execute(query)
+
+#     conn.commit()
+#     cursor.close()
+#     conn.close()
+
+
+def circles_column_add_and_fill() -> None:
     conn, cursor = psycopg_connect_db()
 
-    cr_query = create_table_query()
-    cursor.execute(cr_query)
-
-    for i in range(1, 5):
-        query = calc_overlaps_query(i)
-        cursor.execute(query)
-
+    cursor.execute('''
+        ALTER TABLE "objects"
+        ADD COLUMN IF NOT EXISTS "circle" geometry;
+    ''')
+    for availability in range(1, 5):
+        radius = availability_meters(availability)
+        cursor.execute(f'''
+            UPDATE "objects"
+            SET "circle" = ST_SetSRID(ST_Buffer(position::geography, {radius})::geometry, 4326)
+            WHERE availability = {availability}
+        ''')
     conn.commit()
     cursor.close()
     conn.close()
 
+if __name__ == "__main__":
+    circles_column_add_and_fill()
