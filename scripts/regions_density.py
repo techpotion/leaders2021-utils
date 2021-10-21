@@ -11,26 +11,24 @@ def read_geojson() -> pd.DataFrame:
     return df
 
 def read_demography() -> pd.DataFrame:
-    df = pd.read_excel('assets/demography.xlsx')
-    df['District'] = df['District'].str.strip()
+    df = pd.read_excel('assets/regions.xlsx')
+    df['density'] = df['density']
+    df['population'] = df['population'].apply(lambda x: int(x[1:].replace(' ', '')))
     return df
 
 if __name__ == "__main__":
     df1 = read_demography()
+    print(df1.head())
     df2 = read_geojson()
-    df = df1.merge(df2, left_on='District', right_on='region', how='right')
+    df = df1.merge(df2, left_on='region', right_on='region', how='right')
     df.columns = column_names_to_snake(list(df.columns))
-
+    df = df.dropna()
     engine = connect_db()
     df.to_sql('regions', engine, index=False, if_exists='replace')
     engine.execute('''
         ALTER TABLE "regions"
         ADD COLUMN "polygon" geometry;
-        ALTER TABLE "regions"
-        ADD COLUMN "square" double precision;
 
         UPDATE "regions"
         SET "polygon" = ST_GeomFromGeoJSON(geojson);
-        UPDATE "regions"
-        SET "square" = ST_Area(polygon::geography);
     ''')
