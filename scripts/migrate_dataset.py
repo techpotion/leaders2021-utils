@@ -2,7 +2,7 @@
 # dataset migration to the database
 #
 
-from db_connection import connect_db
+from scripts.db_connection import connect_db
 import pandas as pd
 
 def read_dataset_sheet_1() -> pd.DataFrame:
@@ -120,5 +120,8 @@ def migrate(replace=False, which='both') -> None:
         )
 
 
-if __name__ == "__main__":
+def main():
     migrate(replace=True, which='first')
+
+if __name__ == "__main__":
+    main()

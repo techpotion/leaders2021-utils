@@ -1,8 +1,8 @@
 import pandas as pd
 from geojson import Point, Feature
 import json
-from utils.utils import column_names_to_snake
-from db_connection import connect_db
+from scripts.utils.utils import column_names_to_snake
+from scripts.db_connection import connect_db
 
 def read_parks_dataset() -> pd.DataFrame:
     return pd.read_json('assets/parks.json', encoding='windows-1251')
@@ -24,7 +24,7 @@ def update_column_names(df: pd.DataFrame) -> pd.DataFrame:
     df.columns = ['id'] + column_names_to_snake(list(df.columns)[1:])
     return df
 
-if __name__ == "__main__":
+def main():
     df = read_parks_dataset()
     df = update_column_names(df)
 
@@ -63,3 +63,6 @@ if __name__ == "__main__":
             DROP "geo_data";
             '''
         )
+
+if __name__ == "__main__":
+    main()

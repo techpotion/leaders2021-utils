@@ -2,7 +2,7 @@ import pandas as pd
 from geojson import Point, Feature
 import json
 
-from migrate_dataset import read_dataset_sheet_1
+from scripts.migrate_dataset import read_dataset_sheet_1
 
 def gen_geojson():
     df = read_dataset_sheet_1()
@@ -24,7 +24,10 @@ def gen_geojson():
 
     return result
 
-if __name__ == "__main__":
+def main():
     output = gen_geojson()
     with open("export/heatmap.geojson", "w") as outfile:
         json.dump(output, outfile)
+
+if __name__ == "__main__":
+    main()

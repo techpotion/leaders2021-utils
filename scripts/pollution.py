@@ -1,13 +1,13 @@
 import pandas as pd
-from utils.utils import column_names_to_snake
-from db_connection import connect_db
+from scripts.utils.utils import column_names_to_snake
+from scripts.db_connection import connect_db
 
 NORMAL_VALUE_SUBSTR = 'не превысило'
 
 def read_polution_dataset() -> pd.DataFrame:
     return pd.read_json('assets/pollution.json', encoding='windows-1251')
 
-if __name__ == "__main__":
+def main():
     df = read_polution_dataset()
     df.columns = column_names_to_snake(list(df.columns))
     df['geo_data'] = df['geo_data'].astype(str)
@@ -38,3 +38,6 @@ if __name__ == "__main__":
         DROP "geodata_center";
         '''
     )
+
+if __name__ == "__main__":
+    main()

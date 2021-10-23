@@ -1,6 +1,7 @@
 import pandas as pd
-from db_connection import connect_db
-from utils.utils import column_names_to_snake
+from scripts.db_connection import connect_db
+
+from scripts.utils.utils import column_names_to_snake
 
 def read_geojson() -> pd.DataFrame:
     df = pd.read_json('assets/moscow_regions.geojson')
@@ -16,7 +17,7 @@ def read_demography() -> pd.DataFrame:
     df['population'] = df['population'].apply(lambda x: int(x[1:].replace(' ', '')))
     return df
 
-if __name__ == "__main__":
+def main():
     df1 = read_demography()
     print(df1.head())
     df2 = read_geojson()
@@ -32,3 +33,6 @@ if __name__ == "__main__":
         UPDATE "regions"
         SET "polygon" = ST_GeomFromGeoJSON(geojson);
     ''')
+
+if __name__ == "__main__":
+    main()

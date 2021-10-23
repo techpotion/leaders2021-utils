@@ -1,11 +1,11 @@
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
-from migrate_dataset import read_dataset_sheet_1, read_dataset_sheet_2
+from scripts.migrate_dataset import read_dataset_sheet_1, read_dataset_sheet_2
 import os
 from geopy.distance import geodesic
 import pandas as pd
 import time
-from db_connection import connect_db, psycopg_connect_db
+from scripts.db_connection import connect_db, psycopg_connect_db
 from sqlalchemy import text
 
 TABLE_NAME = "circles_test"
@@ -124,5 +124,8 @@ def circles_column_add_and_fill() -> None:
     cursor.close()
     conn.close()
 
-if __name__ == "__main__":
+def main():
     circles_column_add_and_fill()
+
+if __name__ == "__main__":
+    main()
