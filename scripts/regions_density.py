@@ -3,6 +3,7 @@ from scripts.db_connection import connect_db
 
 from scripts.utils.utils import column_names_to_snake
 
+# reading moscow regions info dataset
 def read_geojson() -> pd.DataFrame:
     df = pd.read_json('assets/moscow_regions.geojson')
     df['properties'] = df['properties'].apply(lambda x: x['NAME'])
@@ -11,13 +12,15 @@ def read_geojson() -> pd.DataFrame:
     df['geojson'] = df['geojson'].astype(str)
     return df
 
+# reading moscow density by regions dataset
 def read_demography() -> pd.DataFrame:
     df = pd.read_excel('assets/regions.xlsx')
     df['density'] = df['density']
     df['population'] = df['population'].apply(lambda x: int(x[1:].replace(' ', '')))
     return df
 
-def main():
+# preprocessing data and pushing it to db
+def push_to_db():
     df1 = read_demography()
     print(df1.head())
     df2 = read_geojson()
@@ -33,6 +36,10 @@ def main():
         UPDATE "regions"
         SET "polygon" = ST_GeomFromGeoJSON(geojson);
     ''')
+
+# entry point
+def main():
+    push_to_db()
 
 if __name__ == "__main__":
     main()

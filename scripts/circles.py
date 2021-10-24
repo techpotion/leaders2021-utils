@@ -16,6 +16,7 @@ INTERSECTIONS_TABLE_NAME = "circles_intersections"
 # 3	Районное
 # 4	Шаговая доступность
 
+# calculating circle radius by availability
 def availability_meters(availability: int) -> int:
     if availability == 4:
         return 500
@@ -28,25 +29,7 @@ def availability_meters(availability: int) -> int:
     else:
         return 0
 
-# def create_table_query() -> str:
-#     return f'''
-#         DROP TABLE IF EXISTS {TABLE_NAME};
-
-#         CREATE TABLE {TABLE_NAME} (
-#             object_id bigint,
-#             neighbor_object_id bigint,
-#             availability double precision,
-#             distance double precision
-#         );
-#     '''
-
-# def calc_overlaps_query(availability: int) -> str:
-#     a_meters = availability_meters(availability)
-#     return f'''
-#         WITH obs AS (
-#             SELECT * FROM objects
-#             WHERE availability = {availability}
-#         )
+# making sql table migration query
 def create_table_query() -> str:
     return f'''
         DROP TABLE IF EXISTS {TABLE_NAME};
@@ -68,6 +51,7 @@ def create_table_query() -> str:
         );
     '''
 
+# calculating circles overlaps and saving to earlier created database
 def calc_overlaps_query(availability: int) -> str:
     a_meters = availability_meters(availability)
     return f'''
@@ -82,30 +66,7 @@ def calc_overlaps_query(availability: int) -> str:
         WHERE (o.availability = {availability}) AND (ST_DistanceSphere(o.position, ob.position) BETWEEN 10 AND {a_meters});
     '''
 
-#         INSERT INTO {TABLE_NAME}
-#         SELECT o.object_id as object_id, ob.object_id as neighbor_object_id, o.availability as availability, ST_DistanceSphere(o.position, ob.position) as distance FROM obs as o
-#         JOIN obs as ob on true
-#         WHERE (o.availability = {availability}) AND (ST_DistanceSphere(o.position, ob.position) BETWEEN 10 AND {a_meters});
-
-#         SELECT * FROM objects
-#         LIMIT 1
-#     '''
-
-# if __name__ == "__main__":
-#     conn, cursor = psycopg_connect_db()
-
-#     cr_query = create_table_query()
-#     cursor.execute(cr_query)
-
-#     for i in range(1, 5):
-#         query = calc_overlaps_query(i)
-#         cursor.execute(query)
-
-#     conn.commit()
-#     cursor.close()
-#     conn.close()
-
-
+# adding circle column and filling it with circles polygons
 def circles_column_add_and_fill() -> None:
     conn, cursor = psycopg_connect_db()
 
@@ -124,6 +85,7 @@ def circles_column_add_and_fill() -> None:
     cursor.close()
     conn.close()
 
+# entry point
 def main():
     circles_column_add_and_fill()
 

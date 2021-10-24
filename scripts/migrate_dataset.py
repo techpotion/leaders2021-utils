@@ -5,11 +5,8 @@
 from scripts.db_connection import connect_db
 import pandas as pd
 
+# reading first sheet of the dataset
 def read_dataset_sheet_1() -> pd.DataFrame:
-    '''
-    reading dataset from excel file
-    sheet 1 and processing it
-    '''
     df: pd.DataFrame = pd.read_excel('assets/dataset.xlsx', 'Объекты отдельно')
     print(df.columns)
     df = df.drop(columns=['Доступность.1'])
@@ -27,11 +24,8 @@ def read_dataset_sheet_1() -> pd.DataFrame:
     print(df.columns)
     return df
 
+# reading second sheet of the dataset
 def read_dataset_sheet_2() -> pd.DataFrame:
-    '''
-    reading dataset from excel file
-    sheet 2 and processing it
-    '''
     df: pd.DataFrame = pd.read_excel('assets/dataset.xlsx', 'Со спортзонами и видами спорта')
     print(df.columns)
     df = df.drop(columns=['Доступность.1', 'Unnamed: 13',  'Unnamed: 14', 'Unnamed: 15'])
@@ -54,6 +48,7 @@ def read_dataset_sheet_2() -> pd.DataFrame:
     print(df.columns)
     return df
 
+# pushing preprocessed dataset to the database
 def migrate(replace=False, which='both') -> None:
     '''
     migrating it from dataframe
@@ -119,7 +114,7 @@ def migrate(replace=False, which='both') -> None:
             '''
         )
 
-
+# entry point
 def main():
     migrate(replace=True, which='first')
 
