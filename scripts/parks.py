@@ -15,7 +15,7 @@ def update_column_names(df: pd.DataFrame) -> pd.DataFrame:
 
 # preprocessing dataframe and pushing to db
 def push_to_db():
-        df = read_parks_dataset()
+    df = read_parks_dataset()
     df = update_column_names(df)
 
     df = df[['common_name', 'adm_area', 'district', 'location', 'has_sportground', 'geo_data', 'geodata_center']]
