@@ -4,6 +4,7 @@ import json
 
 from scripts.migrate_dataset import read_dataset_sheet_1
 
+# generating heatmap geojson from objects dataset
 def gen_geojson():
     df = read_dataset_sheet_1()
     df = df[df['object_point_lat'].notna()]
@@ -24,6 +25,7 @@ def gen_geojson():
 
     return result
 
+# entry point
 def main():
     output = gen_geojson()
     with open("export/heatmap.geojson", "w") as outfile:
