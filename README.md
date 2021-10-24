@@ -4,7 +4,7 @@
 # Sport Object Analysis
 
 ## Database
-1 Depoly Postgres with PostGIS extenstion using docker
+1. Depoly Postgres with PostGIS extenstion using docker
 ```bash
 $ docker pull kartoza/postgis
 $ docker run --name=postgis -d -e POSTGRES_USER=<username> -e POSTGRES_PASSWORD=<password> -e POSTGRES_DBNAME=<dbname> -e ALLOW_IP_RANGE=0.0.0.0/0 -p 5432:5432 --restart=always postgis/postgis
