@@ -2,15 +2,18 @@ import pandas as pd
 from geojson import Point, Feature
 import json
 
+# loading elections 2020 dataset
 def load_votes_df() -> pd.DataFrame:
     df = pd.read_csv('assets/votes.csv')
     return df
 
+# loading polling station info dataset
 def load_stations() -> pd.DataFrame:
     df = pd.read_excel('assets/voting_stations.xlsx')
     df = df.loc[:, ['ID', 'Longitude_WGS84', 'Latitude_WGS84']]
     return df
 
+# preprocessing elections 2020 dataset
 def process_votes(df: pd.DataFrame) -> pd.DataFrame:
     df = df.loc[df['УИК'] != 'Сумма']
     df = df.loc[df['Регион'] == 'город Москва']
@@ -19,11 +22,13 @@ def process_votes(df: pd.DataFrame) -> pd.DataFrame:
     df['УИК'] = df['УИК'].astype('int64')
     return df
 
+# merging datasets to get "station - voters" dependency
 def merge_dfs(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     df = df2.merge(df1, left_on='УИК', right_on='ID')
     df = df.drop(columns=['УИК', 'ID'])
     return df
 
+# forming geojson for the heatmap
 def df_to_geojson(df: pd.DataFrame) -> dict:
     features = []
     for _, row in df.iterrows():
@@ -40,6 +45,7 @@ def df_to_geojson(df: pd.DataFrame) -> dict:
 
     return result
 
+# entry point
 def main():
     df1 = load_stations()
     df2 = process_votes(load_votes_df())
