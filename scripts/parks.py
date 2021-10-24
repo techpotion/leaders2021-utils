@@ -4,28 +4,18 @@ import json
 from scripts.utils.utils import column_names_to_snake
 from scripts.db_connection import connect_db
 
+# reading parks dataset from data.mos.ru
 def read_parks_dataset() -> pd.DataFrame:
     return pd.read_json('assets/parks.json', encoding='windows-1251')
 
-# def form_latlangs(df: pd.DataFrame) -> pd.DataFrame:
-#     df['center_point_lat'] = None
-#     df['center_point_lng'] = None
-
-#     for index, row in df.iterrows():
-#         coordinates = row['geodata_center']
-#         lng, lat = coordinates['coordinates']
-#         df.at[index, 'center_point_lat'] = lat
-#         df.at[index, 'center_point_lng'] = lng
-
-#     df = df[df['center_lat'].notna()]
-#     return df
-
+# column names processing
 def update_column_names(df: pd.DataFrame) -> pd.DataFrame:
     df.columns = ['id'] + column_names_to_snake(list(df.columns)[1:])
     return df
 
-def main():
-    df = read_parks_dataset()
+# preprocessing dataframe and pushing to db
+def push_to_db():
+        df = read_parks_dataset()
     df = update_column_names(df)
 
     df = df[['common_name', 'adm_area', 'district', 'location', 'has_sportground', 'geo_data', 'geodata_center']]
@@ -63,6 +53,10 @@ def main():
             DROP "geo_data";
             '''
         )
+
+# entry point
+def main():
+    push_to_db()
 
 if __name__ == "__main__":
     main()
