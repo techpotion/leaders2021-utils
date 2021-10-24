@@ -4,10 +4,12 @@ from scripts.db_connection import connect_db
 
 NORMAL_VALUE_SUBSTR = 'не превысило'
 
+# reading pollution dataset from data.mos.ru
 def read_polution_dataset() -> pd.DataFrame:
     return pd.read_json('assets/pollution.json', encoding='windows-1251')
 
-def main():
+# preprocessing dataset and pushing to db
+def push_to_db():
     df = read_polution_dataset()
     df.columns = column_names_to_snake(list(df.columns))
     df['geo_data'] = df['geo_data'].astype(str)
@@ -38,6 +40,10 @@ def main():
         DROP "geodata_center";
         '''
     )
+
+# entry point
+def main():
+    push_to_db
 
 if __name__ == "__main__":
     main()
