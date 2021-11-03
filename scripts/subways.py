@@ -5,14 +5,13 @@ from scripts.db_connection import connect_db
 def load_df() -> pd.DataFrame:
     with open('assets/metro.geojson', encoding='utf-8') as f:
         gj = json.load(f)
-    df = pd.DataFrame(columns=['name', 'name_en', 'line_colour', 'point_lat', 'point_lng'])
+    df = pd.DataFrame(columns=['name', 'line_color', 'point_lat', 'point_lng'])
     for row in gj['features']:
         props = row['properties']
         geom = row['geometry']
         df = df.append({
-            'name': props['name'],
-            'name_en': props['name_en'],
-            'line_colour': props['colour'],
+            'name': props['TEXT'],
+            'line_color': str(props['color']),
             'point_lat': geom['coordinates'][1],
             'point_lng': geom['coordinates'][0],
         }, ignore_index=True)
